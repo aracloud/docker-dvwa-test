@@ -46,7 +46,8 @@ RUN mkdir -p /var/www/localhost/htdocs && \
     cp /var/www/localhost/htdocs/config/config.inc.php.dist /var/www/localhost/htdocs/config/config.inc.php
 
 # Init-SQL & Startskript
-COPY configs/init.sql /init.sql
+#COPY configs/init.sql /init.sql
+COPY configs/init.sql /docker-entrypoint-initdb.d/
 COPY scripts/mysqld-start.sh /usr/local/bin/mysqld-start
 RUN chmod +x /usr/local/bin/mysqld-start
 
