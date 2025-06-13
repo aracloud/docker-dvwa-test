@@ -47,13 +47,8 @@ RUN mkdir -p /run/mysqld && \
 COPY init.sql /init.sql
 
 # Konfiguriere Lighttpd für PHP-FPM
-#RUN echo 'server.modules += ( "mod_fastcgi" )\n\
-#fastcgi.server = ( ".php" => ((\n\
-#  "host" => "127.0.0.1",\n\
-#  "port" => 9000\n\
-#)))' >> /etc/lighttpd/lighttpd.conf
-COPY http.conf /http.conf
-RUN cat /http.conf >> /etc/lighttpd/lighttpd.conf
+COPY configs/lighttpd-fastcgi.conf /etc/lighttpd/conf.d/fastcgi.conf
+RUN echo 'include "conf.d/fastcgi.conf"' >> /etc/lighttpd/lighttpd.conf
 
 # Konfiguration anpassen (php.ini)
 RUN echo "allow_url_fopen = On\ndisplay_errors = On" >> /etc/php83/php.ini
