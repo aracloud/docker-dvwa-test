@@ -44,7 +44,7 @@ RUN mkdir -p /run/mysqld && \
     mysql_install_db --user=mysql --basedir=/usr --datadir=/var/lib/mysql
 
 # MariaDB Bootstrap Script
-COPY init.sql /init.sql
+COPY configs/init.sql /init.sql
 
 # Konfiguriere Lighttpd für PHP-FPM
 COPY configs/lighttpd-fastcgi.conf /etc/lighttpd/conf.d/fastcgi.conf
@@ -54,7 +54,7 @@ RUN echo 'include "conf.d/fastcgi.conf"' >> /etc/lighttpd/lighttpd.conf
 RUN echo "allow_url_fopen = On\ndisplay_errors = On" >> /etc/php83/php.ini
 
 # Supervisor-Konfiguration
-COPY supervisord.conf /etc/supervisord.conf
+COPY configs/supervisord.conf /etc/supervisord.conf
 
 # Standard-Port öffnen
 EXPOSE 80

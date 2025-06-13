@@ -1,0 +1,5 @@
+CREATE DATABASE IF NOT EXISTS dvwa;
+CREATE USER 'dvwa'@'localhost' IDENTIFIED BY 'dvwa';
+GRANT ALL PRIVILEGES ON dvwa.* TO 'dvwa'@'localhost';
+FLUSH PRIVILEGES;
+
