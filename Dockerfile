@@ -8,27 +8,27 @@ RUN apk add --no-cache \
     mariadb mariadb-client \
     supervisor git bash curl
 
-# --- neu: Laufzeit‑Verzeichnisse anlegen -------------------
+# Laufzeitverzeichnisse vorbereiten
 RUN mkdir -p /run/apache2 /run/mysqld /var/lib/mysql /var/www/localhost/htdocs \
  && chown -R mysql:mysql /run/mysqld /var/lib/mysql
 
-# DVWA holen …
+# DVWA klonen
 RUN git clone https://github.com/digininja/DVWA.git /var/www/localhost/htdocs/dvwa \
  && cp /var/www/localhost/htdocs/dvwa/config/config.inc.php.dist \
-        /var/www/localhost/htdocs/dvwa/config/config.inc.php
+       /var/www/localhost/htdocs/dvwa/config/config.inc.php
 
-# DB initialisieren
+# MariaDB initialisieren
 RUN mysql_install_db --user=mysql --basedir=/usr --datadir=/var/lib/mysql
 
-# Root‑PW + DVWA‑DB
-RUN mariadbd --user=mysql --bootstrap <<'EOSQL'
-CREATE DATABASE dvwa;
-CREATE USER 'dvwa'@'localhost' IDENTIFIED BY 'dvwa';
-GRANT ALL PRIVILEGES ON dvwa.* TO 'dvwa'@'localhost';
-FLUSH PRIVILEGES;
-EOSQL
-
-# DVWA‑Config anpassen (bleibt wie gehabt)
+# MariaDB temporär starten, um Setup durchzuführen
+RUN mysqld_safe --datadir='/var/lib/mysql' --user=mysql & \
+    sleep 5 && \
+    mysql -u root -e "CREATE DATABASE dvwa;" && \
+    mysql -u root -e "CREATE USER 'dvwa'@'localhost' IDENTIFIED BY 'dvwa';" && \
+    mysql -u root -e "GRANT ALL PRIVILEGES ON dvwa.* TO 'dvwa'@'localhost';" && \
+    mysql -u root -e "FLUSH PRIVILEGES;" && \
+    killall mysqld && \
+    sleep 5
 
 COPY supervisord.conf /etc/supervisord.conf
 EXPOSE 80
